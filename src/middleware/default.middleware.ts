@@ -8,7 +8,7 @@ export class DefaultMiddleware {
 
     public static async exampleToDelete(req: Request, res: Response) {
         try {
-            const users = serverInstance.getPrismaClient().user.findMany();
+            const users = await serverInstance.getPrismaClient().user.findMany();
             res.status(200).send(users);
         } catch (error) {
             res.status(500).send(`An error occured : ${error}`);

@@ -12,7 +12,8 @@
         "start:dev": "nodemon --exec \"ts-node\" src/index.ts",
         "start:docker": "node ./dist/src/index.js --port 3000",
         "test": "jest",
-        "test:dev": "jest --watch --verbose"
+        "test:dev": "jest --watch --verbose",
+        "studio": "prisma studio"
     },
     "dependencies": {
         "@prisma/client": "^5.20.0",
