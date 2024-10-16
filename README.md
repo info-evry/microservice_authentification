@@ -21,7 +21,7 @@ docker-compose up -d
 
 Normalement il devrait il avoir  :
 ```bash
-DATABASE_URL="postgresql://root:root@localhost:5432/my_database?schema=public
+DATABASE_URL="postgresql://root:root@localhost:5435/my_database?schema=public
 ```
 ### Etape 4 : Création de votre Base de données avec prisma
 
@@ -43,3 +43,9 @@ Elle permet de visualiser votre BDD
 npm run start:dev
 ```
 Une page web devrait s'ouvrir avec le port http://localhost:3000
+
+## Infos 
+- PORT BDD AIE MARKET : 5432
+- PORT BDD NOTIFICATIONS : 5433
+- PORT BDD AUTHENTIFICATIONS : 5435
+- PORT BDD PLANNING : 5436
