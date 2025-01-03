@@ -1,9 +1,13 @@
+import dotenv from "dotenv";
 import cors from "cors";
 import express from "express";
 import glob from "glob";
 import path from "path";
 import { config } from "./config/config";
 import { PrismaClient } from "@prisma/client";
+import google from "./middleware/google.middleware";
+
+dotenv.config();
 
 export class Server {
     private host: string;
@@ -39,7 +43,7 @@ export class Server {
                 limit: "50mb",
             }),
         );
-
+        this.app.use(google.initialize());
         this.setRoute();
         this.app.use("/public", express.static(__dirname + "/public"));
     }

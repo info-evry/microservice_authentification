@@ -14,16 +14,120 @@ datasource db {
 }
 
 model User {
-    id               String    @id @default(cuid())
+    id               String     @id @default(cuid())
     name             String?
-    email            String?   @unique
-    emailVerified    DateTime?
-    stripeCustomerId String?
-    role             Role      @default(USER)
+    email            String     @unique
+    emailVerifiedAt  DateTime?
+    studentId        String?    @unique
+    stripeCustomerId String?    @unique
+    azureAdId        String?    @unique
+    githubId         String?    @unique
+    googleId         String?    @unique
+    role             Role       @default(EXTERNAL)
+    Order            Order[]
+    Planning         Planning[]
 }
 
 enum Role {
-    USER
+    EXTERNAL
+    STUDENT
     MEMBER
+    BOARD
     ADMIN
+}
+
+model Product {
+    id                    String         @id @default(cuid())
+    title                 String
+    description           String?
+    priceMember           Int
+    priceExternal         Int
+    customFields          Json?
+    quantity              Int?
+    category              String?
+    isExclusiveToStudents Boolean?
+    isExternal            Boolean?
+    isActive              Boolean        @default(true)
+    createdAt             DateTime       @default(now())
+    deletedAt             DateTime?
+    image                 Bytes
+    // Packages specific
+    products              Product[]      @relation("PackageProducts")
+    packageId             String?
+    package               Product?       @relation("PackageProducts", fields: [packageId], references: [id])
+    consumption           Consumption[]
+    Order                 Order?         @relation(fields: [orderId], references: [id])
+    orderId               String?
+    OrderProduct          OrderProduct[]
+}
+
+model Order {
+    id           String         @id @default(cuid())
+    products     OrderProduct[]
+    consumptions Consumption[]
+    customer     User           @relation(fields: [userId], references: [id])
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
+    userId       String
+    Transaction  Transaction[]
+    Product      Product[]
+}
+
+model OrderProduct {
+    id        String  @id @default(cuid())
+    product   Product @relation(fields: [productId], references: [id])
+    order     Order   @relation(fields: [orderId], references: [id])
+    productId String
+    orderId   String
+    quantity  Int
+
+    @@unique([orderId, productId]) // Ensures each product can only appear once per order
+}
+
+model Consumption {
+    id        String   @id @default(cuid())
+    product   Product  @relation(fields: [productId], references: [id])
+    order     Order    @relation(fields: [orderId], references: [id])
+    date      DateTime @default(now())
+    productId String
+    orderId   String
+}
+
+model Transaction {
+    id                String            @id @default(cuid())
+    amount            Float
+    checkoutSessionId String            @unique
+    status            TransactionStatus
+    createdAt         DateTime          @default(now())
+    updatedAt         DateTime          @updatedAt
+    order             Order             @relation(fields: [orderId], references: [id])
+    orderId           String
+}
+
+enum TransactionStatus {
+    PENDING
+    SUCCEEDED
+    FAILED
+    EXPIRED
+}
+
+model Planning {
+    id        String         @id @default(cuid())
+    member    User           @relation(fields: [userId], references: [id])
+    startDate DateTime
+    endDate   DateTime
+    status    PlanningStatus
+    userId    String
+}
+
+enum PlanningStatus {
+    AVAILABLE
+    CANCELED
+}
+
+model ProcessEvent {
+    id        String    @id @default(cuid())
+    stripeId  String    @unique
+    type      String
+    handledAt DateTime?
 }
