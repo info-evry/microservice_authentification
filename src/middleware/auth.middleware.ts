@@ -1,4 +1,3 @@
-// src/middleware/auth.middleware.ts
 import passport from "passport";
 import { Strategy as GoogleStrategy, Profile as GoogleProfile } from "passport-google-oauth20";
 import { Strategy as GitHubStrategy, Profile as GitHubProfile } from "passport-github2";
