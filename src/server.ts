@@ -5,7 +5,7 @@ import glob from "glob";
 import path from "path";
 import { config } from "./config/config";
 import { PrismaClient } from "@prisma/client";
-import google from "./middleware/google.middleware";
+import passport from "./middleware/auth.middleware";
 
 dotenv.config();
 
@@ -43,7 +43,7 @@ export class Server {
                 limit: "50mb",
             }),
         );
-        this.app.use(google.initialize());
+        this.app.use(passport.initialize());
         this.setRoute();
         this.app.use("/public", express.static(__dirname + "/public"));
     }
