@@ -1,6 +1,6 @@
 // src/routes/default.routes.ts
 import { Router, Request, Response, Application } from "express";
-import passport from "../middleware/google.middleware";
+import passport from "../middleware/auth.middleware";
 import { UserModel } from "../model/user.model";
 import { generateToken } from "../tools/jwt-client";
 
@@ -13,12 +13,12 @@ declare global {
 }
 export default function (app: Application) {
     /**
-     * 1) Démarrer la connexion Google (redirige automatiquement vers google.com)
+     * Démarrer la connexion Google (redirige automatiquement vers google.com)
      */
-    app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+    app.get("/auth/google", passport.authenticate("google"));
 
     /**
-     * 2) Callback : Google renvoie ici après l'auth
+     * Callback : Google renvoie ici après l'auth
      */
     app.get(
         "/auth/google/callback",
@@ -30,9 +30,9 @@ export default function (app: Application) {
             // On génère le JWT avec le payload souhaité
             const token = generateToken({
                 googleId: user.googleId,
-                displayName: user.displayName,
-                email: user.email,
-                photo: user.photo,
+                displayName: user.googleDisplayName,
+                email: user.googleEmail,
+                photo: user.googlePhoto,
             });
 
             // On peut renvoyer en JSON (REST) ou rediriger
