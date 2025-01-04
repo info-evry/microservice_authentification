@@ -1,7 +1,7 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy, Profile as GoogleProfile } from "passport-google-oauth20";
 import { Strategy as GitHubStrategy, Profile as GitHubProfile } from "passport-github2";
-import { UserModel } from "../model/user.model";
+import { User } from "@prisma/client";
 
 /**
  *  Récupération des secrets Google et GitHub via .env
@@ -24,18 +24,17 @@ passport.use(
             accessToken: string,
             refreshToken: string,
             profile: GoogleProfile,
-            done: (error: any, user?: UserModel) => void,
+            done: (error: any, user?: User) => void,
         ) => {
             try {
-                const user: UserModel = {
+                const user: Partial<User> = {
                     // Champs Google
                     googleId: profile.id,
-                    googleDisplayName: profile.displayName,
-                    googleEmail: profile.emails?.[0].value,
-                    googlePhoto: profile.photos?.[0].value,
+                    name: profile.displayName,
+                    email: profile.emails?.[0].value,
+                    emailVerifiedAt: new Date(),
                 };
-                // Possibilité d'insérer/rechercher l'utilisateur en BDD ici.
-                done(null, user);
+                return done(null, user as User);
             } catch (error) {
                 done(error, undefined);
             }
@@ -52,24 +51,23 @@ passport.use(
             clientID: GITHUB_CLIENT_ID || "",
             clientSecret: GITHUB_CLIENT_SECRET || "",
             callbackURL: "/auth/github/callback",
-            scope: ["user:email"], // pour récupérer l'e-mail dans profile.emails
+            scope: ["user:email"],
         },
         async (
             accessToken: string,
             refreshToken: string,
             profile: GitHubProfile,
-            done: (error: any, user?: UserModel) => void,
+            done: (error: any, user?: User) => void,
         ) => {
             try {
-                const user: UserModel = {
+                const user: Partial<User> = {
                     // Champs GitHub
                     githubId: profile.id,
-                    githubUsername: profile.username,
-                    githubEmail: profile.emails?.[0].value,
-                    githubPhoto: profile.photos?.[0].value,
+                    name: profile.username,
+                    email: profile.emails?.[0].value,
+                    emailVerifiedAt: new Date(),
                 };
-                // Possibilité d'insérer/rechercher l'utilisateur en BDD ici.
-                done(null, user);
+                return done(null, user as User);
             } catch (error) {
                 done(error, undefined);
             }
