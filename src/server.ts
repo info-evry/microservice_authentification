@@ -7,8 +7,6 @@ import { config } from "./config/config";
 import { PrismaClient } from "@prisma/client";
 import passport from "./middleware/auth.middleware";
 
-dotenv.config();
-
 export class Server {
     private host: string;
     private port: number;

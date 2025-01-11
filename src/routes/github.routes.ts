@@ -1,4 +1,4 @@
-import { Router, Request, Response, Application } from "express";
+import { Application } from "express";
 import { User } from "@prisma/client";
 import passport from "../middleware/auth.middleware";
 import { generateToken } from "../tools/jwt-client";
