@@ -1,0 +1,36 @@
+name: CI Coverage
+
+on:
+    push:
+        branches: ["main"]
+    pull_request:
+        branches: ["main"]
+
+jobs:
+    build-and-test:
+        runs-on: ubuntu-latest
+
+        steps:
+            # 1) Récupérer le code
+            - uses: actions/checkout@v3
+
+            # 2) Choisir la version de Node
+            - name: Use Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16 # ou 18, ou 20...
+
+            # 3) Installer les dépendances
+            - name: Install dependencies
+              run: npm install
+
+            # 4) Lancer les tests avec coverage
+            - name: Run tests with coverage
+              run: npm run test:coverage
+
+            # 5) (Optionnel) Sauvegarder le rapport coverage dans GitHub Actions
+            - name: Upload coverage report
+              uses: actions/upload-artifact@v3
+              with:
+                  name: coverage-report
+                  path: coverage
