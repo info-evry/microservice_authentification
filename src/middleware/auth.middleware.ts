@@ -1,8 +1,8 @@
-import passport from "passport";
-import { Strategy as GoogleStrategy, Profile as GoogleProfile } from "passport-google-oauth20";
-import { Strategy as GitHubStrategy, Profile as GitHubProfile } from "passport-github2";
 import { User } from "@prisma/client";
 import dotenv from "dotenv";
+import passport from "passport";
+import { Profile as GitHubProfile, Strategy as GitHubStrategy } from "passport-github2";
+import { Profile as GoogleProfile, Strategy as GoogleStrategy } from "passport-google-oauth20";
 
 dotenv.config();
 

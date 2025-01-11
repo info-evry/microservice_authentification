@@ -1,8 +1,8 @@
-import { Application } from "express";
 import { User } from "@prisma/client";
+import { Application } from "express";
 import passport from "../middleware/auth.middleware";
-import { generateToken } from "../tools/jwt-client";
 import { serverInstance } from "../server";
+import { generateToken } from "../tools/jwt-client";
 
 declare global {
     namespace Express {
@@ -34,14 +34,12 @@ export default function (app: Application) {
             if (err) {
                 // Erreur “Passport” ou interne
                 console.error("Passport error:", err);
-                return res.status(500).json({ success: false, message: err.message });
+                return res.redirect(`${process.env.NEXT_URL}/auth/login?error=INTERNAL`);
             }
             if (!user) {
                 // Cas où user est inexistant => 401
                 // (ex: si github a refusé l'auth)
-                return res
-                    .status(401)
-                    .json({ success: false, message: info?.message || "User not found" });
+                return res.redirect(`${process.env.NEXT_URL}/auth/login?error=SSO_DENIED`);
             }
 
             // Ici, user correspond à l'objet renvoyé par la stratégie github
@@ -60,7 +58,8 @@ export default function (app: Application) {
                         },
                     });
                     const token = generateToken(updated);
-                    return res.json({ success: true, token, user: updated });
+
+                    return res.redirect(`${process.env.NEXT_URL}/api/auth/callback?token=${token}`);
                 } else {
                     // Personne n'a ce githubId => On vérifie par email
                     const existingByEmail = await serverInstance.getPrismaClient().user.findUnique({
@@ -69,7 +68,7 @@ export default function (app: Application) {
 
                     if (existingByEmail) {
                         // Il existe déjà un utilisateur avec cet email => 403
-                        return res.status(403).send("Email already exists");
+                        return res.redirect(`${process.env.NEXT_URL}/auth/login?error=SSO_EXISTS`);
                     } else {
                         // Personne n'a ce githubId, ni cet email => on crée
                         const created = await serverInstance.getPrismaClient().user.create({
@@ -81,13 +80,15 @@ export default function (app: Application) {
                             },
                         });
                         const token = generateToken(created);
-                        return res.json({ success: true, token, user: created });
+                        return res.redirect(
+                            `${process.env.NEXT_URL}/api/auth/callback?token=${token}`,
+                        );
                     }
                 }
             } catch (dbError) {
                 // Gestion d’erreur si la requête Prisma échoue
                 console.error(dbError);
-                return res.status(500).send(`An error occurred: ${dbError}`);
+                return res.redirect(`${process.env.NEXT_URL}/auth/login?error=DATABASE`);
             }
         })(req, res, next);
     });
