@@ -25,10 +25,15 @@ jobs:
               run: npm install
 
             # 4) Lancer les tests avec coverage
-            - name: Run tests with coverage
+            - name: Run with secrets
+              env:
+                  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+                  GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+                  GITHUB_CLIENT_ID: ${{ secrets.GH_CLIENT_ID }}
+                  GITHUB_CLIENT_SECRET: ${{ secrets.GH_CLIENT_SECRET }}
               run: npm run test:coverage
 
-            # 5) (Optionnel) Sauvegarder le rapport coverage dans GitHub Actions
+              # 5) (Optionnel) Sauvegarder le rapport coverage dans GitHub Actions
             - name: Upload coverage report
               uses: actions/upload-artifact@v3
               with:
