@@ -29,6 +29,11 @@ Normalement il devrait il avoir :
 DATABASE_URL="postgresql://root:root@localhost:5435/my_database?schema=public
 ```
 
+Pour le reste des variables d'environnement, je vous invite à consulter :
+(Pour les tester la connexion, il suffit d'avoir les VENV de google ou github)
+https://support.google.com/googleapi/answer/6158849?hl=en&ref_topic=7013279&sjid=922858726026479451-EU
+https://developers.google.com/identity/protocols/oauth2/web-server?hl=fr
+
 ### Etape 4 : Création de votre Base de données avec prisma
 
 ```bash
